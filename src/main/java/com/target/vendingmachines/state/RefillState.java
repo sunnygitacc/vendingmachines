@@ -48,6 +48,11 @@ public class RefillState implements VendingMachineState {
         throw new Exception("Cannot reset while refilling");
     }
 
+    @Override
+    public void cancelTransaction() throws Exception {
+
+    }
+
     private void refillVendingMachine(Scanner sc) {
         // TODO: variety of products could fit in, on a particular tray.
         for(int i=0;i<vendingMachine.rows;i++) {

@@ -84,4 +84,9 @@ public class CashInsertState implements VendingMachineState {
     public void reset() throws Exception {
         throw new Exception("Cannot reset while inserting");
     }
+
+    @Override
+    public void cancelTransaction() throws Exception {
+
+    }
 }

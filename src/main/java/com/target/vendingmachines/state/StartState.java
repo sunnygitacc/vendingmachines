@@ -3,6 +3,7 @@ package com.target.vendingmachines.state;
 import com.target.vendingmachines.*;
 import com.target.vendingmachines.objects.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
@@ -30,6 +31,7 @@ public class StartState implements VendingMachineState {
         vendingMachine.columns = 4;
         vendingMachine.cashManager = new CashManager(100);
         vendingMachine.statementManager = new StatementManager();
+        vendingMachine.productsRemovedLastTransaction = new ArrayList<Product>();
         vendingMachine.trays = new Tray[vendingMachine.rows][];
         for(int i = 0; i < vendingMachine.rows; i++) {
             vendingMachine.trays[i] = new Tray[vendingMachine.columns];
@@ -72,5 +74,10 @@ public class StartState implements VendingMachineState {
     @Override
     public void reset() throws Exception {
         throw new Exception("Cannot reset while starting");
+    }
+
+    @Override
+    public void cancelTransaction() throws Exception {
+
     }
 }

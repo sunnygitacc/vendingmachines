@@ -10,10 +10,10 @@ import java.util.Scanner;
 /**
  * Created by Sunil Kata on 7/15/2017.
  */
-public class ResetState implements VendingMachineState {
+public class CancelState implements VendingMachineState {
     VendingMachine vendingMachine;
 
-    public ResetState(VendingMachine vendingMachine) {
+    public CancelState(VendingMachine vendingMachine) {
         this.vendingMachine = vendingMachine;
     }
 
@@ -44,18 +44,23 @@ public class ResetState implements VendingMachineState {
 
     @Override
     public void reset() throws Exception {
-        for(int i=0;i<vendingMachine.rows;i++) {
-            for(int j=0; j<vendingMachine.columns;j++) {
-                // Remove all products from queues.
-                Queue<Product> queue = vendingMachine.trays[i][j].getProductQueue();
-                queue.clear();
-            }
-        }
+
     }
 
     @Override
     public void cancelTransaction() throws Exception {
-
+        // Get the list of products, add them back to the product queue
+        int row = vendingMachine.dispensingRow;
+        int column = vendingMachine.dispensingColumn;
+        int quantity = vendingMachine.dispensingQuantity;
+        Queue<Product> queue = vendingMachine.trays[row][column].getProductQueue();
+        int cashToGiveBack = 0;
+        for(Product product : vendingMachine.productsRemovedLastTransaction) {
+            cashToGiveBack += product.getPrice();
+            queue.add(product);
+        }
+        int cashAvailable = vendingMachine.cashManager.getCashAvailable();
+        vendingMachine.cashManager.setCashToDispense(cashToGiveBack);
+        vendingMachine.cashManager.setCashAvailable(cashAvailable-cashToGiveBack);
     }
-
 }

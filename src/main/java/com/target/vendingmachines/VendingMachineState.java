@@ -12,4 +12,5 @@ public interface VendingMachineState {
     public void dispenseProduct() throws Exception;
     public void dispenseCash() throws Exception;
     public void reset() throws Exception;
+    public void cancelTransaction() throws Exception;
 }

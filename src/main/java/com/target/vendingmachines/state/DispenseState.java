@@ -39,7 +39,8 @@ public class DispenseState implements VendingMachineState {
         int quantity = vendingMachine.dispensingQuantity;
         Queue<Product> queue = vendingMachine.trays[row][column].getProductQueue();
         for(int i=0;i<quantity;i++) {
-            queue.remove();
+            Product product = queue.remove();
+            vendingMachine.productsRemovedLastTransaction.add(product);
         }
         System.out.println("Dispensing products");
     }
@@ -49,7 +50,7 @@ public class DispenseState implements VendingMachineState {
         // TODO: Give out in denominations
         int cashToDispense = vendingMachine.cashManager.getCashToDispense();
         if( cashToDispense > 0 ) {
-            System.out.println("Please take the change of " + cashToDispense);
+            System.out.println("Please take the cash of " + cashToDispense);
             vendingMachine.cashManager.setCashToDispense(0);
         }
     }
@@ -57,5 +58,10 @@ public class DispenseState implements VendingMachineState {
     @Override
     public void reset() throws Exception {
         throw new Exception("Cannot reset while dispensing");
+    }
+
+    @Override
+    public void cancelTransaction() throws Exception {
+
     }
 }

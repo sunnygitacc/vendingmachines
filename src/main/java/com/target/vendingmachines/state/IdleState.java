@@ -45,4 +45,9 @@ public class IdleState implements VendingMachineState {
     public void reset() throws Exception {
 
     }
+
+    @Override
+    public void cancelTransaction() throws Exception {
+
+    }
 }

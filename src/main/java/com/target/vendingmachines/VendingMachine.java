@@ -1,9 +1,11 @@
 package com.target.vendingmachines;
 
+import com.target.vendingmachines.objects.Product;
 import com.target.vendingmachines.objects.Supplier;
 import com.target.vendingmachines.objects.Tray;
 import com.target.vendingmachines.state.*;
 
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -21,6 +23,7 @@ public class VendingMachine implements VendingMachineState {
     public int dispensingColumn = -1;
     public int dispensingQuantity = -1;
     public StatementManager statementManager = null;
+    public List<Product> productsRemovedLastTransaction = null;
 
     public VendingMachine() {
         this.state = new StartState(this);
@@ -45,6 +48,16 @@ public class VendingMachine implements VendingMachineState {
                     if( next ) {
                         state = new DispenseState(vendingMachine);
                         state.dispenseProduct();
+                        state.dispenseCash();
+                    }
+                    // TODO: Can be timed out
+                    System.out.println("Do you want to Cancel this transaction? Yes/No :");
+                    sc.nextLine();
+                    String cancelResponse = sc.nextLine();
+                    if( YES_RESPONSE.compareToIgnoreCase(cancelResponse) == 0 ) {
+                        state = new CancelState(vendingMachine);
+                        state.cancelTransaction();
+                        state = new DispenseState(vendingMachine);
                         state.dispenseCash();
                     }
                 }
@@ -72,6 +85,7 @@ public class VendingMachine implements VendingMachineState {
                     System.out.println("Your password is wrong");
                 }
             }
+            sc.nextLine();
         }
     }
 
@@ -121,5 +135,10 @@ public class VendingMachine implements VendingMachineState {
     @Override
     public void reset() throws Exception {
         state.reset();
+    }
+
+    @Override
+    public void cancelTransaction() throws Exception {
+        state.cancelTransaction();
     }
 }
