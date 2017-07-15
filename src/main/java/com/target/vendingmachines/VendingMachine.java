@@ -1,27 +1,35 @@
 package com.target.vendingmachines;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import com.target.vendingmachines.objects.Supplier;
+import com.target.vendingmachines.objects.Tray;
+import com.target.vendingmachines.state.*;
+
 import java.util.Scanner;
 
 /**
  * Created by Sunil Kata on 7/14/2017.
  */
-public class VendingMachine {
-    private Supplier supplier;
-    private int rows;
-    private int columns;
-    private static int SMALL_CAPACITY = 10;
-    private static int MEDIUM_CAPACITY = 20;
-    private static int LARGE_CAPACITY = 30;
-    private static int EXTRA_LARGE_CAPACITY = 40;
-    private Tray[][] trays;
+public class VendingMachine implements VendingMachineState {
+    public Supplier supplier;
+    public int rows;
+    public int columns;
+    public Tray[][] trays;
     private static String YES_RESPONSE = "yes";
+    public static VendingMachineState state = null;
+    public CashManager cashManager = null;
+    public int dispensingRow = -1;
+    public int dispensingColumn = -1;
+    public int dispensingQuantity = -1;
 
-    public static void main(String[] args) {
-        // do init.
+    public VendingMachine() {
+        this.state = new StartState(this);
+    }
+
+    public static void main(String[] args) throws Exception {
         VendingMachine vendingMachine = new VendingMachine();
-        vendingMachine.initVendingMachine();
+        // do init.
+        vendingMachine.state.initVendingMachine();
+        vendingMachine.state = new IdleState(vendingMachine);
 
         Scanner sc = new Scanner(System.in);
         while(true) {
@@ -31,12 +39,13 @@ public class VendingMachine {
                 if( vendingMachine.isVendingMachineEmpty() ) {
                     System.out.println("Sorry, nothing to sell for today!");
                 } else {
-                    // enter a number in the range (0,0) to (rows-1, columns-1)
-                    // Corresponding to the tray matrix.
-                    System.out.println("Enter a number corresponding to tray matrix in the range (0,0) to  ("+(vendingMachine.rows-1)+","+ (vendingMachine.columns-1)+")");
-                    int row = sc.nextInt();
-                    int column = sc.nextInt();
-                    vendingMachine.vendProduct(sc, row, column);
+                    state = new CashInsertState(vendingMachine);
+                    boolean next = state.takeInputFromCustomer(sc);
+                    if( next ) {
+                        state = new DispenseState(vendingMachine);
+                        state.dispenseProduct();
+                        state.dispenseCash();
+                    }
                 }
             } else {
                 System.out.println("Well, if you are supplier, please type our identification:");
@@ -45,8 +54,9 @@ public class VendingMachine {
                     System.out.println("What do you want? 1. Refill Vending Machine 2. Ask for statement 3. Take cash 4. Reset");
                     int option = sc.nextInt();
                     switch (option) {
-                        case 1: // Refill vending machine.. complete refill or first time fill. TODO: fill partially.
-                            vendingMachine.refillVendingMachine(sc);
+                        case 1: //TODO: fill partially.
+                            state = new RefillState(vendingMachine);
+                            state.takeInputFromSupplier(sc);
                             break;
                         case 2: // TODO Cash statement.
                             break;
@@ -55,43 +65,6 @@ public class VendingMachine {
                     }
                 } else {
                     System.out.println("Your password is wrong");
-                }
-            }
-        }
-    }
-
-    private void vendProduct(Scanner sc, int row, int column) {
-        // offer the price of the product.
-        // ask for cash.
-        // customer puts in something? scan the range of cash. Check available cash
-        // Offer change.
-        // cash manager, needs to check if he has change for the cash?
-        // Otherwise, ask for exactly that price.
-        //
-
-    }
-
-
-    private void refillVendingMachine(Scanner sc) {
-        // TODO: variety of products could fit in, on a particular tray.
-        for(int i=0;i<rows;i++) {
-            for(int j=0;j<columns;j++) {
-                int trayCapacity = trays[i][j].getCapacity();
-                System.out.println("We are at location "+i+" "+ j +" with capacity" + trayCapacity + " product is created with " + ProductType.SMALL);
-                System.out.println("What do you want it's price to be?");
-                int price = sc.nextInt();
-                Queue<Product> queue = trays[i][j].getProductQueue();
-                // for loop all products. Create products.
-                for( int loop = 0; loop < trayCapacity; loop++) {
-                    Product product=null;
-                    switch (i) {
-                        case 0: product = new Product(ProductType.SMALL, price);
-                        case 1: product = new Product(ProductType.MEDIUM, price);
-                        case 2: product = new Product(ProductType.MEDIUM, price);
-                        case 3: product = new Product(ProductType.LARGE, price);
-                        case 4: product = new Product(ProductType.EXTRA_LARGE, price);
-                    }
-                    queue.add(product);
                 }
             }
         }
@@ -108,29 +81,35 @@ public class VendingMachine {
         return true;
     }
 
-    private void initVendingMachine() {
-        supplier = new Supplier("password");
-        rows = 5;
-        columns = 4;
-        trays = new Tray[rows][];
-        for(int i = 0; i < rows; i++) {
-            trays[i] = new Tray[columns];
-            for(int j = 0 ; j < columns; j++) {
-                Queue<Product> productQueue = new LinkedList<Product>();
-                Button button = new Button(i*j);
-                Tray tray=null;
-                switch(i) {
-                    case 0: tray = new Tray(TraySize.SMALL, productQueue, SMALL_CAPACITY, button); break;
-                    case 1: tray = new Tray(TraySize.SMALL, productQueue, MEDIUM_CAPACITY, button); break;
-                    case 2: tray = new Tray(TraySize.SMALL, productQueue, MEDIUM_CAPACITY, button); break;
-                    case 3: tray = new Tray(TraySize.SMALL, productQueue, LARGE_CAPACITY, button); break;
-                    case 4: tray = new Tray(TraySize.SMALL, productQueue, EXTRA_LARGE_CAPACITY, button); break;
-                }
-                trays[i][j] = tray;
-            }
+    public boolean doesProductExistsInQuantity(int row, int column, int quantity) {
+        if( this.trays[row][column].getProductQueue().size() >= quantity ) {
+            return true;
         }
+        return false;
     }
 
+    @Override
+    public void initVendingMachine() throws Exception {
+        state.initVendingMachine();
+    }
 
+    @Override
+    public boolean takeInputFromCustomer(Scanner scanner) throws Exception {
+        return state.takeInputFromCustomer(scanner);
+    }
 
+    @Override
+    public void takeInputFromSupplier(Scanner scanner) throws Exception {
+        state.takeInputFromSupplier(scanner);
+    }
+
+    @Override
+    public void dispenseProduct() throws Exception {
+        state.dispenseProduct();
+    }
+
+    @Override
+    public void dispenseCash() throws Exception {
+        state.dispenseCash();
+    }
 }
