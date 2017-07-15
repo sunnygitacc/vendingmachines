@@ -68,4 +68,9 @@ public class StartState implements VendingMachineState {
     public void dispenseCash() throws Exception {
 
     }
+
+    @Override
+    public void reset() throws Exception {
+        throw new Exception("Cannot reset while starting");
+    }
 }

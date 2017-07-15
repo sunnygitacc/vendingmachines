@@ -53,4 +53,9 @@ public class DispenseState implements VendingMachineState {
             vendingMachine.cashManager.setCashToDispense(0);
         }
     }
+
+    @Override
+    public void reset() throws Exception {
+        throw new Exception("Cannot reset while dispensing");
+    }
 }

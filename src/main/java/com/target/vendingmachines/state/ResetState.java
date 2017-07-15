@@ -2,23 +2,24 @@ package com.target.vendingmachines.state;
 
 import com.target.vendingmachines.VendingMachine;
 import com.target.vendingmachines.VendingMachineState;
+import com.target.vendingmachines.objects.Product;
 
+import java.util.Queue;
 import java.util.Scanner;
 
 /**
- * Created by Sunil Kata on 7/14/2017.
+ * Created by Sunil Kata on 7/15/2017.
  */
-public class IdleState implements VendingMachineState {
-
+public class ResetState implements VendingMachineState {
     VendingMachine vendingMachine;
 
-    public IdleState(VendingMachine vendingMachine) {
+    public ResetState(VendingMachine vendingMachine) {
         this.vendingMachine = vendingMachine;
     }
 
     @Override
     public void initVendingMachine() throws Exception {
-        throw new Exception("Nothing to init at Idle state");
+
     }
 
     @Override
@@ -33,16 +34,23 @@ public class IdleState implements VendingMachineState {
 
     @Override
     public void dispenseProduct() throws Exception {
-        throw new Exception("Cannot dispense at Idle State");
+
     }
 
     @Override
     public void dispenseCash() throws Exception {
-        throw new Exception("Cannot dispense cash at Idle State");
+
     }
 
     @Override
     public void reset() throws Exception {
-
+        for(int i=0;i<vendingMachine.rows;i++) {
+            for(int j=0; j<vendingMachine.columns;j++) {
+                // Remove all products from queues.
+                Queue<Product> queue = vendingMachine.trays[i][j].getProductQueue();
+                queue.clear();
+            }
+        }
     }
+
 }

@@ -59,7 +59,7 @@ public class CashInsertState implements VendingMachineState {
         StringBuffer sb = new StringBuffer();
         Queue<Product> queue = vendingMachine.trays[row][column].getProductQueue();
         for(Product product : queue) {
-            sb.append(product.getProductId());
+            sb.append(product.getProductId()+",");
         }
         vendingMachine.statementManager.addRecord(sb.toString(), cashEntered, diff, false, cashAvailable);
     }
@@ -78,5 +78,10 @@ public class CashInsertState implements VendingMachineState {
     public void dispenseCash() throws Exception {
         throw new Exception("Not yet ready to dispense");
 
+    }
+
+    @Override
+    public void reset() throws Exception {
+        throw new Exception("Cannot reset while inserting");
     }
 }

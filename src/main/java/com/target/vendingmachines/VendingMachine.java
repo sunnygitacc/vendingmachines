@@ -63,6 +63,10 @@ public class VendingMachine implements VendingMachineState {
                             break;
                         case 3: // TODO clear cash?
                             break;
+                        case 4: // reset
+                            state = new ResetState(vendingMachine);
+                            state.reset();
+                            break;
                     }
                 } else {
                     System.out.println("Your password is wrong");
@@ -112,5 +116,10 @@ public class VendingMachine implements VendingMachineState {
     @Override
     public void dispenseCash() throws Exception {
         state.dispenseCash();
+    }
+
+    @Override
+    public void reset() throws Exception {
+        state.reset();
     }
 }

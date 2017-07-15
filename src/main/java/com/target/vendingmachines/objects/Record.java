@@ -23,6 +23,18 @@ public class Record {
         this.cashAvailable = cashAvailable;
     }
 
+    @Override
+    public String toString() {
+        return "Record{" +
+                "productIdPurchased='" + productIdPurchased + '\'' +
+                ", cashEntered=" + cashEntered +
+                ", tenderedChange=" + tenderedChange +
+                ", localDateTime=" + localDateTime +
+                ", isCancelled=" + isCancelled +
+                ", cashAvailable=" + cashAvailable +
+                '}';
+    }
+
     public String getProductIdPurchased() {
         return productIdPurchased;
     }

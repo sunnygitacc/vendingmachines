@@ -11,4 +11,5 @@ public interface VendingMachineState {
     public void takeInputFromSupplier(Scanner scanner) throws Exception;
     public void dispenseProduct() throws Exception;
     public void dispenseCash() throws Exception;
+    public void reset() throws Exception;
 }
