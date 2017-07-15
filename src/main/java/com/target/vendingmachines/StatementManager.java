@@ -26,4 +26,8 @@ public class StatementManager {
             System.out.println(record);
         }
     }
+
+    public List<Record> getStatement() {
+        return statement;
+    }
 }

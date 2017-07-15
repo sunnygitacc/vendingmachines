@@ -3,7 +3,9 @@ package com.target.vendingmachines.state;
 import com.target.vendingmachines.VendingMachine;
 import com.target.vendingmachines.VendingMachineState;
 import com.target.vendingmachines.objects.Product;
+import com.target.vendingmachines.objects.Record;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.Scanner;
 
@@ -62,5 +64,9 @@ public class CancelState implements VendingMachineState {
         int cashAvailable = vendingMachine.cashManager.getCashAvailable();
         vendingMachine.cashManager.setCashToDispense(cashToGiveBack);
         vendingMachine.cashManager.setCashAvailable(cashAvailable-cashToGiveBack);
+        // Go to the last record, change it's state to cancelled?
+        List<Record> statement = vendingMachine.statementManager.getStatement();
+        Record record = statement.get(statement.size()-1);
+        record.setCancelled(true);
     }
 }

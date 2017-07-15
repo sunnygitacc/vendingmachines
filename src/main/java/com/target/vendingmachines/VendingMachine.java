@@ -73,6 +73,7 @@ public class VendingMachine implements VendingMachineState {
                             state.takeInputFromSupplier(sc);
                             break;
                         case 2: vendingMachine.statementManager.printStatement();
+                            System.out.println("Final Cash Available " + vendingMachine.cashManager.cashAvailable);
                             break;
                         case 3: // TODO clear cash?
                             break;
