@@ -2,7 +2,9 @@ package com.target.vendingmachines.state;
 
 import com.target.vendingmachines.VendingMachine;
 import com.target.vendingmachines.VendingMachineState;
+import com.target.vendingmachines.objects.Product;
 
+import java.util.Queue;
 import java.util.Scanner;
 
 /**
@@ -37,6 +39,7 @@ public class CashInsertState implements VendingMachineState {
             int cashEntered = scanner.nextInt();
             int cashAvailable = vendingMachine.cashManager.getCashAvailable();
             int diff = cashEntered - cashToEnter;
+            recordThisEntry(row, column, cashEntered, cashAvailable, diff);
             if( diff < 0 ) {
                 System.out.println("Not sufficient cash to buy these products");
             } else if( diff == 0 ) {
@@ -50,6 +53,15 @@ public class CashInsertState implements VendingMachineState {
             return false;
         }
         return true;
+    }
+
+    private void recordThisEntry(int row, int column, int cashEntered, int cashAvailable, int diff) {
+        StringBuffer sb = new StringBuffer();
+        Queue<Product> queue = vendingMachine.trays[row][column].getProductQueue();
+        for(Product product : queue) {
+            sb.append(product.getProductId());
+        }
+        vendingMachine.statementManager.addRecord(sb.toString(), cashEntered, diff, false, cashAvailable);
     }
 
     @Override

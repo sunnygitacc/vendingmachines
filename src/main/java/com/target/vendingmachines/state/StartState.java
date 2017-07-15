@@ -29,6 +29,7 @@ public class StartState implements VendingMachineState {
         vendingMachine.rows = 5;
         vendingMachine.columns = 4;
         vendingMachine.cashManager = new CashManager(100);
+        vendingMachine.statementManager = new StatementManager();
         vendingMachine.trays = new Tray[vendingMachine.rows][];
         for(int i = 0; i < vendingMachine.rows; i++) {
             vendingMachine.trays[i] = new Tray[vendingMachine.columns];

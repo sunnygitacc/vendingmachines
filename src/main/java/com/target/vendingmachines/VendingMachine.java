@@ -20,6 +20,7 @@ public class VendingMachine implements VendingMachineState {
     public int dispensingRow = -1;
     public int dispensingColumn = -1;
     public int dispensingQuantity = -1;
+    public StatementManager statementManager = null;
 
     public VendingMachine() {
         this.state = new StartState(this);
@@ -58,7 +59,7 @@ public class VendingMachine implements VendingMachineState {
                             state = new RefillState(vendingMachine);
                             state.takeInputFromSupplier(sc);
                             break;
-                        case 2: // TODO Cash statement.
+                        case 2: vendingMachine.statementManager.printStatement();
                             break;
                         case 3: // TODO clear cash?
                             break;
